@@ -5,7 +5,7 @@ import numpy as np
 from nltk.tokenize import word_tokenize
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
+from nltk.stem import SnowballStemmer, WordNetLemmatizer
 from nltk import pos_tag
 import logging
 import warnings
@@ -29,9 +29,18 @@ class TextProcessing:
         self.logger = logging.getLogger(__name__)
 
         nltk.download("averaged_perceptron_tagger")
+        nltk.download("stopwords")
+        nltk.download("punkt")
+        nltk.download("wordnet")
         self.language = language
+        self.type_lemmatization = "lemmatizer"  # or 'stemmer'
         self.stop_words = set(stopwords.words(self.language))
-        self.stemmer = SnowballStemmer(self.language)
+        if self.type_lemmatization == "lemmatizer":
+            self.logger.info("Using WordNetLemmatizer for lemmatization")
+            self.lemmatizer = WordNetLemmatizer()
+        elif self.type_lemmatization == "stemmer":
+            self.logger.info("Using SnowballStemmer for lemmatization")
+            self.lemmatizer = SnowballStemmer(self.language)
 
     def tokenize(self, text: str):
         """This method is used to tokenize the text"""
@@ -47,7 +56,9 @@ class TextProcessing:
 
     def lemmatize(self, tokens: list):
         """This method is used to lemmatize the text"""
-        lemmatized_tokens = [self.stemmer.stem(word) for word in tokens]
+        lemmatized_tokens = [
+            self.lemmatizer.lemmatize(word) for word in tokens
+        ]
         return lemmatized_tokens
 
     def pos_tagging(self, tokens: list):
@@ -153,4 +164,4 @@ class TextProcessing:
 # TODO: ejecutar método run en clase de orchestrator
 if __name__ == "__main__":
     text_processing = TextProcessing(language="english")
-    text_processing.run(file_name="tickets_classification_eng", version="1")
+    text_processing.run(file_name="tickets_classification_eng", version="lemmatized")
