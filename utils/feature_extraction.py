@@ -43,7 +43,6 @@ class FeatureExtraction:
             list: List of strings, each string represents a topic consisting of top words.
         """
         self.nmf = NMF(n_components=n_components, random_state=123)
-        self.nmf.fit(self.dtm)
         self.W = self.nmf.fit_transform(self.dtm)
         self.H = self.nmf.components_
         vocab = np.array(self.tfidf.get_feature_names_out())
@@ -116,7 +115,7 @@ class FeatureExtraction:
 if __name__ == "__main__":
     feature_extractor_processor = FeatureExtraction()
     data_path_processed = "tracking/data/data_processed"
-    data_version = 1
+    data_version = "lemmatized"
     feature_extractor_processor.run(data_path_processed, data_version)
 
 
